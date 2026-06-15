@@ -18,8 +18,7 @@ function KanbanPage() {
   const [modalCadastroAberto, setModalCadastroAberto] = useState(false)
   const navigate = useNavigate()
 
-  useEffect(() => { carregarDados() }, [])
-  useEffect(() => { if (tipoAtivo) carregarAquisicoes() }, [filtros, tipoAtivo, carregarAquisicoes])
+ 
 
   const carregarDados = async () => {
     try {
@@ -46,6 +45,11 @@ function KanbanPage() {
   const aquisicoesFiltradas = aquisicoes.filter(a => 
   a.tipoAquisicaoId === tipoAtivo && !a.cancelado
 )
+
+  useEffect(() => { carregarDados() }, [])
+  useEffect(() => { if (tipoAtivo) carregarAquisicoes() }, [filtros, tipoAtivo, carregarAquisicoes])
+
+
   const stats = {
     total: aquisicoesFiltradas.length,
     emDia: aquisicoesFiltradas.filter(a => a.statusAquisicao?.nome === "Em dia").length,
