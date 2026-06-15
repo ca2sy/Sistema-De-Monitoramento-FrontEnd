@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"  
 import { listarAquisicoes, listarEtapas, listarTipos } from "../services/api"
 import { toast } from "react-toastify"
 import Tabs from "../components/UI/Tabs"
@@ -18,8 +18,6 @@ function KanbanPage() {
   const [modalCadastroAberto, setModalCadastroAberto] = useState(false)
   const navigate = useNavigate()
 
- 
-
   const carregarDados = async () => {
     try {
       const [resEtapas, resTipos] = await Promise.all([listarEtapas(), listarTipos()])
@@ -33,21 +31,22 @@ function KanbanPage() {
     }
   }
 
-  const carregarAquisicoes = async () => {
+
+  const carregarAquisicoes = useCallback(async () => {
     try {
       const res = await listarAquisicoes({ ...filtros, tipoId: tipoAtivo })
       setAquisicoes(res.data)
     } catch {
       toast.error("Erro ao carregar aquisições")
     }
-  }
+  }, [filtros, tipoAtivo])  
 
   const aquisicoesFiltradas = aquisicoes.filter(a => 
-  a.tipoAquisicaoId === tipoAtivo && !a.cancelado
-)
+    a.tipoAquisicaoId === tipoAtivo && !a.cancelado
+  )
 
   useEffect(() => { carregarDados() }, [])
-  useEffect(() => { if (tipoAtivo) carregarAquisicoes() }, [filtros, tipoAtivo, carregarAquisicoes])
+  useEffect(() => { if (tipoAtivo) carregarAquisicoes() }, [tipoAtivo, carregarAquisicoes])
 
 
   const stats = {
