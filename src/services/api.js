@@ -7,7 +7,7 @@ const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL || "http://localhost:3001",
 });
 
-console.log("API:", process.env.REACT_APP_API_URL);
+
 
 export const listarAquisicoes = (filtros = {}) => api.get("/aquisicoes", { params: filtros })
 export const cadastrarAquisicao = (dados) => api.post("/aquisicoes", dados)
