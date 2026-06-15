@@ -19,7 +19,7 @@ function KanbanPage() {
   const navigate = useNavigate()
 
   useEffect(() => { carregarDados() }, [])
-  useEffect(() => { if (tipoAtivo) carregarAquisicoes() }, [filtros, tipoAtivo])
+  useEffect(() => { if (tipoAtivo) carregarAquisicoes() }, [filtros, tipoAtivo, carregarAquisicoes])
 
   const carregarDados = async () => {
     try {
