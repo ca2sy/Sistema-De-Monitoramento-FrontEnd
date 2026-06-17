@@ -44,8 +44,8 @@ function KanbanCard({ aquisicao, etapas, onAtualizar }) {
         <div className="card-title">{aquisicao.descricaoObjetoNome}</div>
 
         <div className="card-meta">
-          {aquisicao.metodoAquisicao && (
-            <span className="meta-chip">📋 {aquisicao.metodoAquisicao.nome}</span>
+          {aquisicao.tipoAquisicao && (
+            <span className="meta-chip">📋 {aquisicao.tipoAquisicao.nome}</span>
           )}
           {aquisicao.responsavel && (
             <span className="meta-chip">👤 {aquisicao.responsavel}</span>

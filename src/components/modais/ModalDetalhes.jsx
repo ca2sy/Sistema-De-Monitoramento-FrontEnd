@@ -92,7 +92,6 @@ function ModalDetalhes({ aquisicao: aquisicaoInicial, etapas, onFechar, onAtuali
   const cor = statusCores[aquisicao.statusAquisicao?.nome] || "#E5E7EB"
   const qtdAlteracoes = Object.keys(alteracoes).length
 
-  // Agrupar checklists por etapa
   const checklistsPorEtapa = aquisicao.aquisicaoChecklists?.reduce((acc, item) => {
     const etapaId = item.subEtapa?.etapaAquisicaoId || item.subEtapa?.etapaAquisicao?.id
     if (!acc[etapaId]) {
@@ -113,7 +112,7 @@ function ModalDetalhes({ aquisicao: aquisicaoInicial, etapas, onFechar, onAtuali
             <div>
               <div className="modal-title">{aquisicao.codigo} — {aquisicao.descricaoObjetoNome}</div>
               <div className="modal-subtitle">
-                {aquisicao.tipoAquisicao?.nome} · {aquisicao.metodoAquisicao?.nome} · {aquisicao.secretaria?.nome}
+                {aquisicao.tipoAquisicao?.nome} · {aquisicao.secretaria?.nome}
                 {aquisicao.cancelado && (
                   <span style={{ marginLeft: "8px", background: "#FEE2E2", color: "#991B1B", padding: "1px 8px", borderRadius: "10px", fontSize: "0.72rem" }}>
                     CANCELADO

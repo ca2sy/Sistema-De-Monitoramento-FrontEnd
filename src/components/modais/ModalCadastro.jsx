@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react"
 import { cadastrarAquisicao } from "../../services/api"
-import { listarTipos, listarMetodos, listarEtapas, listarStatus, listarSecretarias } from "../../services/api"
+import { listarTipos, listarEtapas, listarStatus, listarSecretarias } from "../../services/api"
 import { toast } from "react-toastify"
 
 function ModalCadastro({ onFechar, onSalvar, projetoId }) {
   const [dados, setDados] = useState({
     codigo: "", 
     tipoAquisicaoId: "", 
-    metodoAquisicaoId: "",
     etapaAquisicaoId: "", 
     descricaoObjetoNome: "", 
     valorEstimado: "",
@@ -18,28 +17,23 @@ function ModalCadastro({ onFechar, onSalvar, projetoId }) {
     projetoId: projetoId || ""
   })
   const [tipos, setTipos] = useState([])
-  const [metodos, setMetodos] = useState([])
   const [etapas, setEtapas] = useState([])
   const [statusList, setStatusList] = useState([])
   const [secretarias, setSecretarias] = useState([])
   const [loading, setLoading] = useState(false)
   const [etapasCarregando, setEtapasCarregando] = useState(false)
 
-
   useEffect(() => {
     Promise.all([
       listarTipos(), 
-      listarMetodos(), 
       listarStatus(), 
       listarSecretarias()
-    ]).then(([t, m, s, sec]) => {
+    ]).then(([t, s, sec]) => {
       setTipos(t.data)
-      setMetodos(m.data)
       setStatusList(s.data)
       setSecretarias(sec.data)
     })
   }, [])
-
 
   useEffect(() => {
     if (dados.tipoAquisicaoId) {
@@ -47,7 +41,6 @@ function ModalCadastro({ onFechar, onSalvar, projetoId }) {
       listarEtapas(dados.tipoAquisicaoId)
         .then(res => {
           setEtapas(res.data)
-
           if (res.data.length > 0) {
             setDados(prev => ({ ...prev, etapaAquisicaoId: res.data[0].id }))
           }
@@ -60,7 +53,6 @@ function ModalCadastro({ onFechar, onSalvar, projetoId }) {
     }
   }, [dados.tipoAquisicaoId])
 
-  
   useEffect(() => {
     if (projetoId) {
       setDados(prev => ({ ...prev, projetoId }))
@@ -71,7 +63,7 @@ function ModalCadastro({ onFechar, onSalvar, projetoId }) {
 
   const handleSalvar = async () => {
     const obrigatorios = [
-      "codigo", "tipoAquisicaoId", "metodoAquisicaoId", 
+      "codigo", "tipoAquisicaoId", 
       "etapaAquisicaoId", "descricaoObjetoNome", "valorEstimado", 
       "responsavel", "dataLimite", "statusAquisicaoId", 
       "secretariaId", "projetoId"
@@ -79,7 +71,7 @@ function ModalCadastro({ onFechar, onSalvar, projetoId }) {
     
     const faltando = obrigatorios.filter(c => !dados[c])
     if (faltando.length > 0) {
-      toast.warning(`Preencha todos os campos obrigatórios: ${faltando.join(', ')}`)
+      toast.warning(`Preencha todos os campos obrigatórios`)
       return
     }
     
@@ -88,7 +80,6 @@ function ModalCadastro({ onFechar, onSalvar, projetoId }) {
       await cadastrarAquisicao({
         ...dados,
         tipoAquisicaoId: parseInt(dados.tipoAquisicaoId),
-        metodoAquisicaoId: parseInt(dados.metodoAquisicaoId),
         etapaAquisicaoId: parseInt(dados.etapaAquisicaoId),
         statusAquisicaoId: parseInt(dados.statusAquisicaoId),
         secretariaId: parseInt(dados.secretariaId),
@@ -136,16 +127,6 @@ function ModalCadastro({ onFechar, onSalvar, projetoId }) {
               >
                 <option value="">Selecione...</option>
                 {tipos.map(t => <option key={t.id} value={t.id}>{t.nome}</option>)}
-              </select>
-            </div>
-            <div className="form-group">
-              <label>Método de Aquisição *</label>
-              <select 
-                value={dados.metodoAquisicaoId} 
-                onChange={e => handleChange("metodoAquisicaoId", e.target.value)}
-              >
-                <option value="">Selecione...</option>
-                {metodos.map(m => <option key={m.id} value={m.id}>{m.nome}</option>)}
               </select>
             </div>
             <div className="form-group">

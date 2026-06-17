@@ -15,13 +15,10 @@ export const marcarChecklist = (codigo, subEtapaId, concluido) =>
 export const cancelarAquisicao = (codigo, justificativa) =>
   api.patch(`/aquisicoes/${codigo}/cancelar`, { justificativa })
 
-
 export const listarTipos = () => api.get("/tipos-aquisicao")
-export const listarMetodos = () => api.get("/metodos-aquisicao")
-export const listarEtapas = (tipoId) => api.get(`/etapas-aquisicao?tipoId=${tipoId}`) 
+export const listarEtapas = (tipoId) => api.get(`/etapas-aquisicao?tipoId=${tipoId}`)
 export const listarStatus = () => api.get("/status-aquisicao")
 export const listarSecretarias = () => api.get("/secretarias")
-export const listarProjetos = () => api.get("/projetos") 
+export const listarProjetos = () => api.get("/projetos")
 
-// Dashboard
 export const getDashboard = () => api.get("/dashboard")
