@@ -14,14 +14,14 @@ function ModalDetalhes({ aquisicao: aquisicaoInicial, etapas, onFechar, onAtuali
   const [confirmCancelar, setConfirmCancelar] = useState(false)
   const [justificativa, setJustificativa] = useState("")
 
-  const handleMarcar = (itemId, concluido) => {
+  const handleMarcar = (subEtapaId, concluido) => {
     setAquisicao(prev => ({
       ...prev,
       aquisicaoChecklists: prev.aquisicaoChecklists.map(i =>
-        i.checklistItemId === itemId ? { ...i, concluido } : i
+        i.subEtapaId === subEtapaId ? { ...i, concluido } : i
       )
     }))
-    setAlteracoes(prev => ({ ...prev, [itemId]: concluido }))
+    setAlteracoes(prev => ({ ...prev, [subEtapaId]: concluido }))
   }
 
   const tentarFechar = () => {
@@ -33,23 +33,28 @@ function ModalDetalhes({ aquisicao: aquisicaoInicial, etapas, onFechar, onAtuali
   }
 
   const salvarEFechar = async () => {
-  if (Object.keys(alteracoes).length === 0) { onFechar(); return }
-  setSalvando(true)
-  onFechar()
-  try {
-    await Promise.all(
-      Object.entries(alteracoes).map(([itemId, concluido]) =>
-        marcarChecklist(aquisicao.codigo, itemId, concluido)
+    if (Object.keys(alteracoes).length === 0) { 
+      onFechar() 
+      return 
+    }
+    
+    setSalvando(true)
+    try {
+      await Promise.all(
+        Object.entries(alteracoes).map(([subEtapaId, concluido]) =>
+          marcarChecklist(aquisicao.codigo, subEtapaId, concluido)
+        )
       )
-    )
-    toast.success("Checklist salvo!")
-    onAtualizar()
-  } catch {
-    toast.error("Erro ao salvar checklist — tente novamente")
-  } finally {
-    setSalvando(false)
+      toast.success("Checklist salvo!")
+      onAtualizar()
+      onFechar()
+    } catch (error) {
+      console.error("Erro ao salvar:", error)
+      toast.error("Erro ao salvar checklist — tente novamente")
+    } finally {
+      setSalvando(false)
+    }
   }
-}
 
   const handleExcluir = async () => {
     setConfirmExcluir(false)
@@ -87,11 +92,23 @@ function ModalDetalhes({ aquisicao: aquisicaoInicial, etapas, onFechar, onAtuali
   const cor = statusCores[aquisicao.statusAquisicao?.nome] || "#E5E7EB"
   const qtdAlteracoes = Object.keys(alteracoes).length
 
+  // Agrupar checklists por etapa
+  const checklistsPorEtapa = aquisicao.aquisicaoChecklists?.reduce((acc, item) => {
+    const etapaId = item.subEtapa?.etapaAquisicaoId || item.subEtapa?.etapaAquisicao?.id
+    if (!acc[etapaId]) {
+      acc[etapaId] = {
+        etapa: item.subEtapa?.etapaAquisicao || { nome: "Etapa", id: etapaId },
+        itens: []
+      }
+    }
+    acc[etapaId].itens.push(item)
+    return acc
+  }, {}) || {}
+
   return (
     <>
       <div className="overlay" onClick={tentarFechar}>
         <div className="modal" onClick={e => e.stopPropagation()}>
-
           <div className="modal-header">
             <div>
               <div className="modal-title">{aquisicao.codigo} — {aquisicao.descricaoObjetoNome}</div>
@@ -110,6 +127,10 @@ function ModalDetalhes({ aquisicao: aquisicaoInicial, etapas, onFechar, onAtuali
           <div className="modal-body">
             <div className="section-label">Dados da Aquisição</div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "14px", marginBottom: "8px" }}>
+              <div>
+                <div style={{ fontSize: "0.72rem", color: "var(--cinza-500)", fontWeight: "600", marginBottom: "3px" }}>PROJETO</div>
+                <div style={{ fontSize: "0.85rem", fontWeight: "500" }}>{aquisicao.projeto?.nome || "N/A"}</div>
+              </div>
               <div>
                 <div style={{ fontSize: "0.72rem", color: "var(--cinza-500)", fontWeight: "600", marginBottom: "3px" }}>RESPONSÁVEL</div>
                 <div style={{ fontSize: "0.85rem", fontWeight: "500" }}>{aquisicao.responsavel}</div>
@@ -148,21 +169,15 @@ function ModalDetalhes({ aquisicao: aquisicaoInicial, etapas, onFechar, onAtuali
             {!aquisicao.cancelado && (
               <>
                 <div className="section-label">Checklist do Processo</div>
-                {etapas.map(etapa => {
-                  const itensEtapa = aquisicao.aquisicaoChecklists?.filter(
-                    i => i.checklistItem.etapaAquisicaoId === etapa.id
-                  ) || []
-                  if (itensEtapa.length === 0) return null
-                  return (
-                    <ChecklistEtapa
-                      key={etapa.id}
-                      etapa={etapa}
-                      itens={itensEtapa}
-                      etapaAtualId={aquisicao.etapaAquisicaoId}
-                      onMarcar={handleMarcar}
-                    />
-                  )
-                })}
+                {Object.values(checklistsPorEtapa).map(({ etapa, itens }) => (
+                  <ChecklistEtapa
+                    key={etapa.id}
+                    etapa={etapa}
+                    itens={itens}
+                    etapaAtualId={aquisicao.etapaAquisicaoId}
+                    onMarcar={handleMarcar}
+                  />
+                ))}
               </>
             )}
           </div>

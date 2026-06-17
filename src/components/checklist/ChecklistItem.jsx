@@ -1,4 +1,6 @@
 function ChecklistItem({ item, etapaAtiva, onMarcar }) {
+  const subEtapa = item.subEtapa || {}
+  
   return (
     <div
       style={{
@@ -8,7 +10,7 @@ function ChecklistItem({ item, etapaAtiva, onMarcar }) {
       }}
       onMouseEnter={e => e.currentTarget.style.background = "var(--cinza-50)"}
       onMouseLeave={e => e.currentTarget.style.background = "transparent"}
-      onClick={() => onMarcar(item.checklistItemId, !item.concluido)}
+      onClick={() => onMarcar(item.subEtapaId || item.id, !item.concluido)}
     >
       <input
         type="checkbox"
@@ -23,9 +25,10 @@ function ChecklistItem({ item, etapaAtiva, onMarcar }) {
         textDecoration: item.concluido ? "line-through" : "none",
         color: item.concluido ? "var(--cinza-500)" : "var(--cinza-900)"
       }}>
-        {item.checklistItem?.descricao}
+        {subEtapa.nome || item.descricao || "Sub-etapa"}
       </span>
     </div>
   )
 }
+
 export default ChecklistItem

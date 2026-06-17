@@ -53,6 +53,9 @@ function KanbanCard({ aquisicao, etapas, onAtualizar }) {
           {aquisicao.valorEstimado && (
             <span className="meta-chip">💵 USD {Number(aquisicao.valorEstimado).toLocaleString("pt-BR")}</span>
           )}
+          {aquisicao.projeto && (
+            <span className="meta-chip">📁 {aquisicao.projeto.nome}</span>
+          )}
         </div>
 
         <div className="progress-label">
