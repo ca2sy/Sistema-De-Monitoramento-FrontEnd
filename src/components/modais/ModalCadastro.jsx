@@ -97,7 +97,7 @@ function ModalCadastro({ onFechar, onSalvar, projetoId }) {
 
   return (
     <div className="overlay" onClick={onFechar}>
-      <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: "700px" }}>
+      <div className="modal" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
           <div>
             <div className="modal-title">＋ Nova Aquisição</div>

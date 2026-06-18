@@ -25,7 +25,7 @@ function ChecklistItem({ item, etapaAtiva, onMarcar }) {
         textDecoration: item.concluido ? "line-through" : "none",
         color: item.concluido ? "var(--cinza-500)" : "var(--cinza-900)"
       }}>
-        {subEtapa.nome || item.descricao || "Sub-etapa"}
+         {item.subEtapa?.descricao}
       </span>
     </div>
   )
