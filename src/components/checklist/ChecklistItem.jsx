@@ -1,5 +1,4 @@
 function ChecklistItem({ item, etapaAtiva, onMarcar }) {
-  const subEtapa = item.subEtapa || {}
   
   return (
     <div
